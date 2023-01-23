@@ -1,0 +1,8 @@
+# pycharm
+.idea
+
+# virtual environment
+venv
+
+# row files
+*.txt
