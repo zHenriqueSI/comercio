@@ -18,6 +18,7 @@ class ControllerCategoria:
 
     @classmethod
     def remover(cls, categoria: Categoria):
+        # TODO: mudar categoria removida para 'sem categoria' no estoque
         categorias_instances = DaoCategoria.ler()
         categoria_remover = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
         if len(categoria_remover) > 0:
@@ -34,3 +35,30 @@ class ControllerCategoria:
 
         else:
             print(f"Falha ao remover a categoria '{categoria.categoria}'! Esta categoria não existe!")
+
+    @classmethod
+    def mudar_nome(cls, categoria: Categoria, nova_categoria: Categoria):
+        # TODO: mudar também o nome da categoria no estoque
+        categorias_instances = DaoCategoria.ler()
+        categoria_mudar = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
+        if len(categoria_mudar) > 0:
+            if categoria.categoria == nova_categoria.categoria:
+                print(f"Falha ao mudar o nome da categoria '{categoria.categoria}'! O novo nome não pode ser igual ao antigo!")
+            else:
+                categoria_mudar = categoria_mudar[0].categoria
+                categorias_instances = list(map(lambda x: nova_categoria if(x.categoria == categoria_mudar) else (x), categorias_instances))
+                print(f"O nome da categoria '{categoria.categoria}' foi alterado para '{nova_categoria.categoria}' com sucesso!")
+
+            with open('files/categorias.txt', 'w') as txt:
+                for categoria in categorias_instances:
+                    txt.writelines(f'{categoria.categoria}\n')
+
+        else:
+            print(f"Falha ao mudar o nome da categoria '{categoria.categoria}'! Esta categoria não existe!")
+
+    @classmethod
+    def mostrar_categorias(cls):
+        categorias_instances = DaoCategoria.ler()
+        if len(categorias_instances) > 0:
+            for categoria_instance in categorias_instances:
+                print(categoria_instance.categoria)
