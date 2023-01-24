@@ -26,12 +26,12 @@ class ControllerCategoria:
             for i, categoria in enumerate(categorias_instances):
                 if categoria_remover == categoria.categoria:
                     categorias_instances.pop(i)
-                    print(f"Categoria '{categoria.categoria}' removida com sucesso!")
                     break
 
             with open('files/categorias.txt', 'w') as txt:
                 for categoria in categorias_instances:
                     txt.writelines(f'{categoria.categoria}\n')
+                    print(f"Categoria '{categoria.categoria}' removida com sucesso!")
 
         else:
             print(f"Falha ao remover a categoria '{categoria.categoria}'! Esta categoria não existe!")
@@ -62,3 +62,40 @@ class ControllerCategoria:
         if len(categorias_instances) > 0:
             for categoria_instance in categorias_instances:
                 print(categoria_instance.categoria)
+
+
+class ControllerEstoque:
+    @classmethod
+    def cadastrar_produto(cls, nome, preco, categoria: Categoria, quantidade):
+        estoques_instances = DaoEstoque.ler()
+        categorias_instances = DaoCategoria.ler()
+        busca_instancia_produto = list(filter(lambda x: x.produto.nome == nome, estoques_instances))
+        busca_instancia_categoria = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
+        if len(busca_instancia_produto) == 0:
+            if len(busca_instancia_categoria) > 0:
+                estoque = Estoque(Produto(nome, preco, categoria.categoria), quantidade)
+                DaoEstoque.salvar(estoque)
+                print(f"Produto '{nome}' cadastrado com sucesso!'")
+            else:
+                print(f"Falha ao cadastrar o produto '{nome}'! A categoria {categoria.categoria} não existe!")
+        else:
+            print(f"Falha ao cadastrar o produto '{nome}'! Este produto já está cadastrado!")
+
+    @classmethod
+    def remover_produto(cls, nome):
+        estoques_instances = DaoEstoque.ler()
+        produto_remover = list(filter(lambda x: x.produto.nome == nome, estoques_instances))
+        if len(produto_remover) > 0:
+            produto_remover = produto_remover[0].produto.nome
+            for i, estoque_instance in enumerate(estoques_instances):
+                if estoque_instance.produto.nome == produto_remover:
+                    estoques_instances.pop(i)
+                    break
+            with open('files/estoques.txt', 'w') as txt:
+                for estoque_instance in estoques_instances:
+                    txt.writelines(f"{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}")
+                    txt.writelines('\n')
+            print(f"Produto '{nome}' removido com sucesso!")
+
+        else:
+            print(f"Falha ao remover o produto '{nome}'! O produto {nome} não existe!")
