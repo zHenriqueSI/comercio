@@ -139,3 +139,30 @@ class ControllerEstoque:
 
         else:
             print(f"Falha ao mostrar o estoque de produtos! Não há nenhuma produto cadastrado!")
+
+
+class ControllerVenda:
+    @classmethod
+    def cadastrar_venda(cls, nome_produto, vendedor, comprador, quantidade_vendida):
+        # TODO: verificar a existência do cliente e do vendedor
+        estoques_instances = DaoEstoque.ler()
+        busca_instancia_estoque = list(filter(lambda x: x.produto.nome == nome_produto, estoques_instances))
+        if len(busca_instancia_estoque) > 0:
+            estoque_instance = busca_instancia_estoque[0]
+            if quantidade_vendida < int(estoque_instance.quantidade):
+                venda_instance = Venda(estoque_instance.produto, vendedor, comprador, quantidade_vendida)
+                DaoVenda.salvar(venda_instance)
+                estoque_instance.quantidade = int(estoque_instance.quantidade) - int(quantidade_vendida)
+                estoques_instances = list(map(lambda x: estoque_instance if(x.produto.nome == nome_produto) else(x), estoques_instances))
+                with open('files/estoques.txt', 'w') as txt:
+                    for estoque_instance in estoques_instances:
+                        txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
+                        txt.writelines('\n')
+                print(f"A venda do produto '{nome_produto}' foi cadastrada com sucesso!")
+            else:
+                print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Não há estoque suficiente!")
+        else:
+            print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Este produto não existe!")
+
+
+ControllerVenda.cadastrar_venda('Detergente YP', 'Henrique', 'Kennedy', 100)
