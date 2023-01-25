@@ -48,7 +48,7 @@ class DaoEstoque:
         with open('files/estoques.txt', 'r') as txt:
             estoques = list(map(lambda x: x.strip('\n').split(';'), txt.readlines()))
 
-        estoques_instances = [Estoque(Produto(estoque[0], estoque[1], estoque[2]), estoque[3]) for estoque in estoques]
+        estoques_instances = [Estoque(Produto(estoque[0], float(estoque[1]), estoque[2]), int(estoque[3])) for estoque in estoques]
 
         return estoques_instances
 

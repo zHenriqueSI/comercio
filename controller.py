@@ -151,7 +151,7 @@ class ControllerVenda:
         busca_instancia_estoque = list(filter(lambda x: x.produto.nome == nome_produto, estoques_instances))
         if len(busca_instancia_estoque) > 0:
             estoque_instance = busca_instancia_estoque[0]
-            if quantidade_vendida < int(estoque_instance.quantidade):
+            if quantidade_vendida < estoque_instance.quantidade:
                 venda_instance = Venda(estoque_instance.produto, vendedor, comprador, quantidade_vendida)
                 DaoVenda.salvar(venda_instance)
                 estoque_instance.quantidade = int(estoque_instance.quantidade) - int(quantidade_vendida)
