@@ -99,3 +99,28 @@ class ControllerEstoque:
 
         else:
             print(f"Falha ao remover o produto '{nome}'! O produto {nome} não existe!")
+
+    @classmethod
+    def alterar_produto(cls, nome, novo_nome, novo_preco, nova_categoria: Categoria, nova_quantidade):
+        estoques_intances = DaoEstoque.ler()
+        categorias_intances = DaoCategoria.ler()
+        produto_mudar = list(filter(lambda x: x.produto.nome == nome, estoques_intances))
+        categoria_mudar = list(filter(lambda x: x.categoria == nova_categoria.categoria, categorias_intances))
+
+        if len(produto_mudar) > 0:
+            if len(categoria_mudar) > 0:
+                produto_mudar = list(filter(lambda x: x.produto.nome == novo_nome, estoques_intances))
+                if len(produto_mudar) == 0:
+                    estoques_intances = list(map(lambda x: Estoque(Produto(novo_nome, novo_preco, nova_categoria.categoria), nova_quantidade) if(x.produto.nome == nome) else (x), estoques_intances))
+                    with open('files/estoques.txt', 'w') as txt:
+                        for estoque_instance in estoques_intances:
+                            txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
+                            txt.writelines('\n')
+                    print(f"Produto '{nome}' alterado com sucesso!")
+                else:
+                    print(f"Falha ao alterar o produto '{nome}'! O produto '{novo_nome}' já existe!")
+            else:
+                print(f"Falha ao alterar o produto '{nome}'! A categoria '{nova_categoria.categoria}' não existe!")
+
+        else:
+            print(f"Falha ao alterar o produto '{nome}'! Este produto não está cadastrado!")
