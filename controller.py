@@ -124,3 +124,18 @@ class ControllerEstoque:
 
         else:
             print(f"Falha ao alterar o produto '{nome}'! Este produto não está cadastrado!")
+
+    @classmethod
+    def mostrar_produtos(cls):
+        estoques_instances = DaoEstoque.ler()
+        if len(estoques_instances) > 0:
+            print("========== Produtos ==========")
+            for estoque_instance in estoques_instances:
+                print(f"Nome: {estoque_instance.produto.nome}")
+                print(f"Preço: {estoque_instance.produto.preco}")
+                print(f"Categoria: {estoque_instance.produto.categoria}")
+                print(f"Quantidade: {estoque_instance.quantidade}")
+                print("-"*30)
+
+        else:
+            print(f"Falha ao mostrar o estoque de produtos! Não há nenhuma produto cadastrado!")
