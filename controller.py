@@ -60,8 +60,10 @@ class ControllerCategoria:
     def mostrar_categorias(cls):
         categorias_instances = DaoCategoria.ler()
         if len(categorias_instances) > 0:
+            print("========== Categorias ==========")
             for categoria_instance in categorias_instances:
                 print(categoria_instance.categoria)
+                print("-"*32)
 
 
 class ControllerEstoque:
@@ -163,6 +165,3 @@ class ControllerVenda:
                 print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Não há estoque suficiente!")
         else:
             print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Este produto não existe!")
-
-
-ControllerVenda.cadastrar_venda('Detergente YP', 'Henrique', 'Kennedy', 100)
