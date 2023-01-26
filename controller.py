@@ -165,3 +165,25 @@ class ControllerVenda:
                 print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Não há estoque suficiente!")
         else:
             print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Este produto não existe!")
+
+    @classmethod
+    def gerar_relatorio(cls):
+        vendas_instances = DaoVenda.ler()
+        if len(vendas_instances) > 0:
+            relatorio_dic = {}
+            for venda_instance in vendas_instances:
+                if venda_instance.produto_vendido.nome in relatorio_dic.keys():
+                    relatorio_dic[venda_instance.produto_vendido.nome] += venda_instance.quantidade_vendida
+                else:
+                    relatorio_dic[venda_instance.produto_vendido.nome] = venda_instance.quantidade_vendida
+
+            print("========== Produtos ==========")
+            for key, value in relatorio_dic.items():
+                print(f"Produto: {key}")
+                print(f"Número de vendas: {value}")
+                print("-"*30)
+
+        else:
+            print("Erro ao gerar relatório! Não há vendas cadastradas!")
+
+ControllerVenda.gerar_relatorio()

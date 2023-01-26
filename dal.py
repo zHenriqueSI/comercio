@@ -31,7 +31,10 @@ class DaoVenda:
         with open('files/vendas.txt', 'r') as txt:
             vendas = list(map(lambda x: x.strip('\n').split(';'), txt.readlines()))
 
-        vendas_instances = [Venda(Produto(venda[0], venda[1], venda[2]), venda[3], venda[4], venda[5], venda[6]) for venda in vendas]
+        if len(vendas) > 0:
+            vendas_instances = [Venda(Produto(venda[0], venda[1], venda[2]), venda[3], venda[4], int(venda[5]), venda[6]) for venda in vendas]
+        else:
+            vendas_instances = []
 
         return vendas_instances
 
