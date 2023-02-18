@@ -77,7 +77,7 @@ class ControllerEstoque:
             if len(busca_instancia_categoria) > 0:
                 estoque = Estoque(Produto(nome, preco, categoria.categoria), quantidade)
                 DaoEstoque.salvar(estoque)
-                print(f"Produto '{nome}' cadastrado com sucesso!'")
+                print(f"Produto '{nome}' cadastrado com sucesso!")
             else:
                 print(f"Falha ao cadastrar o produto '{nome}'! A categoria {categoria.categoria} não existe!")
         else:
@@ -186,4 +186,23 @@ class ControllerVenda:
         else:
             print("Erro ao gerar relatório! Não há vendas cadastradas!")
 
-ControllerVenda.gerar_relatorio()
+    @classmethod
+    def mostrar_vendas(cls, data_inicio, data_fim):
+        vendas_instances = DaoVenda.ler()
+        data_inicio = datetime.strptime(data_inicio, "%d-%m-%Y")
+        data_fim = datetime.strptime(data_fim, "%d-%m-%Y")
+        if len(vendas_instances) > 0:
+            vendas_selecionadas = list(filter(lambda x: datetime.strptime(x.data, "%d-%m-%Y") >= data_inicio 
+                                                    and datetime.strptime(x.data, "%d-%m-%Y") <= data_fim, vendas_instances))
+            print("========== Vendas  ==========")
+            for venda in vendas_selecionadas:
+                print(f"Nome: {venda.produto_vendido.nome}\n"
+                      f"Preço: {venda.produto_vendido.preco}\n"
+                      f"Categoria: {venda.produto_vendido.categoria}\n"
+                      f"Vendedor: {venda.vendedor}\n"
+                      f"Comprador: {venda.comprador}\n"
+                      f"QTDE Vendida: {venda.quantidade_vendida}\n"
+                      f"Data da venda: {venda.data}")
+                print("-"*30)
+
+ControllerVenda.mostrar_vendas("01-01-2010", '20-03-2024')
