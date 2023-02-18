@@ -221,6 +221,32 @@ class ControllerFornecedor:
         elif len(busca_categoria) == 0:
             print(f"Falha ao cadastrar o fornecedor '{nome}'! A categoria '{categoria}' ainda não foi cadastrada!")
         else:
-            fornecedor = Fornecedor(nome, cnpj, telefone, categoria)
-            DaoFornecedor.salvar(fornecedor)
+            DaoFornecedor.salvar(Fornecedor(nome, cnpj, telefone, categoria))
             print(f"A o cadastro do fornecedor '{nome}' foi realizado com com sucesso!")
+
+
+    @classmethod
+    def alterar_fornecedor(cls, cnpj_alterar, novo_nome, novo_cnpj, novo_telefone, nova_categoria):
+        fornecedores_instances = DaoFornecedor.ler()
+        categorias_instances = DaoCategoria.ler()
+        busca_cnpj_alterar = list(filter(lambda x: x.cnpj == cnpj_alterar, fornecedores_instances))
+        busca_cnpj_novo = list(filter(lambda x: x.cnpj == novo_cnpj, fornecedores_instances))
+        busca_categoria = list(filter(lambda x: x.categoria == nova_categoria, categorias_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, fornecedores_instances))
+        if len(busca_cnpj_alterar) == 0:
+            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! Não há nenhum fornecedor com esse cnpj!")
+        elif len(busca_cnpj_novo) > 0:
+            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! O novo cnpj '{novo_cnpj}' já existe!")
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! O telefone já existe!")
+        elif len(busca_categoria) == 0:
+            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! A categoria '{nova_categoria}' ainda não foi cadastrada!")
+        else:
+            fornecedores_instances = list(map(lambda x: Fornecedor(novo_nome, novo_cnpj, novo_telefone, nova_categoria) if(x.cnpj == cnpj_alterar) else(x), fornecedores_instances))
+            with open('files/fornecedores.txt', 'w') as txt:
+                for fornecedor_instance in fornecedores_instances:
+                    txt.writelines(f"{fornecedor_instance.nome};{fornecedor_instance.cnpj};{fornecedor_instance.telefone};{fornecedor_instance.categoria}")
+                    txt.writelines("\n")
+            print(f"O fornecedor '{cnpj_alterar}' foi alterado com sucesso!")
+
+ControllerFornecedor.alterar_fornecedor('01.325.664/1353-11', 'Vinicius Junior', '14.332.664/1341-11', '11953253928', 'Cosméticos')
