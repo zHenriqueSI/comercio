@@ -205,4 +205,22 @@ class ControllerVenda:
                       f"Data da venda: {venda.data}")
                 print("-"*30)
 
-ControllerVenda.mostrar_vendas("01-01-2010", '20-03-2024')
+
+class ControllerFornecedor:
+    @classmethod
+    def cadastrar_fornecedor(cls, nome, cnpj, telefone, categoria):
+        fornecedores_instances = DaoFornecedor.ler()
+        categorias_instances = DaoCategoria.ler()
+        busca_cnpj = list(filter(lambda x: x.cnpj == cnpj, fornecedores_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == telefone, fornecedores_instances))
+        busca_categoria = list(filter(lambda x: x.categoria == categoria, categorias_instances))
+        if len(busca_cnpj) > 0:
+            print(f"Falha ao cadastrar o fornecedor '{nome}'! O cnpj já existe!")
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao cadastrar o fornecedor '{nome}'! O telefone já existe!")
+        elif len(busca_categoria) == 0:
+            print(f"Falha ao cadastrar o fornecedor '{nome}'! A categoria '{categoria}' ainda não foi cadastrada!")
+        else:
+            fornecedor = Fornecedor(nome, cnpj, telefone, categoria)
+            DaoFornecedor.salvar(fornecedor)
+            print(f"A o cadastro do fornecedor '{nome}' foi realizado com com sucesso!")
