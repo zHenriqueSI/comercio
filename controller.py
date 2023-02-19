@@ -39,17 +39,25 @@ class ControllerCategoria:
     @classmethod
     def alterar_nome_categoria(cls, categoria_alterar, nova_categoria):
         categorias_instances = DaoCategoria.ler()
+        estoques_instances = DaoEstoque.ler()
         busca_categoria = list(filter(lambda x: x.categoria == categoria_alterar, categorias_instances))
         if len(busca_categoria) > 0:
             if categoria_alterar == nova_categoria:
                 print(f"Falha ao mudar o nome da categoria '{categoria_alterar}'! O novo nome não pode ser igual ao antigo!")
             else:
                 categorias_instances = list(map(lambda x: Categoria(nova_categoria) if(x.categoria == categoria_alterar) else (x), categorias_instances))
-                print(f"O nome da categoria '{categoria_alterar}' foi alterado para '{nova_categoria}' com sucesso!")
-
                 with open('files/categorias.txt', 'w') as txt:
                     for categoria in categorias_instances:
                         txt.writelines(f'{categoria.categoria}\n')
+                print(f"O nome da categoria '{categoria_alterar}' foi alterado com sucesso!")
+
+                estoques_instances = list(map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, nova_categoria), x.quantidade) if(x.produto.categoria == categoria_alterar) else (x), estoques_instances))
+                with open('files/estoques.txt', 'w') as txt:
+                    for estoque_instance in estoques_instances:
+                        txt.writelines(f"{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}")
+                        txt.writelines('\n')              
+
+
 
         else:
             print(f"Falha ao alterar o nome da categoria '{categoria_alterar}'! Esta categoria não existe!")
