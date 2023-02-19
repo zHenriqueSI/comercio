@@ -287,9 +287,32 @@ class ControllerCliente:
         if len(busca_cpf) > 0:
             print(f"Falha ao cadastrar o cliente '{cpf}'! O cpf já existe!")
         elif len(busca_telefone) > 0:
-            print(f"Falha ao cadastrar o cliente '{nome}'! O telefone já existe!")
+            print(f"Falha ao cadastrar o cliente '{cpf}'! O telefone já existe!")
         elif len(busca_email) > 0:
-            print(f"Falha ao cadastrar o cliente '{nome}'! O email já existe!")
+            print(f"Falha ao cadastrar o cliente '{cpf}'! O email já existe!")
         else:
             DaoCliente.salvar(Cliente(nome, cpf, telefone, email, endereco))
             print(f"O cadastro do cliente '{cpf}' foi realizado com com sucesso!")
+
+    @classmethod
+    def alterar_cliente(cls, cpf_alterar, novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco):
+        clientes_instances = DaoCliente.ler()
+        busca_cpf_alterar = list(filter(lambda x: x.cpf == cpf_alterar, clientes_instances))
+        busca_cpf_novo = list(filter(lambda x: x.cpf == novo_cpf, clientes_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, clientes_instances))
+        busca_email = list(filter(lambda x: x.email == novo_email, clientes_instances))
+        if len(busca_cpf_alterar) == 0:
+            print(f"Falha ao alterar o cliente '{cpf_alterar}'! Não há nenhum cliente com esse cpf!")
+        elif len(busca_cpf_novo) > 0:
+            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O novo cpf '{novo_cpf}' já existe!")        
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O telefone '{novo_telefone}' já existe!")
+        elif len(busca_email) > 0:
+            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O email '{novo_email}' já existe!")
+        else:
+            clientes_instances = list(map(lambda x: Cliente(novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco) if(x.cpf == cpf_alterar) else(x), clientes_instances))
+            with open('files/clientes.txt', 'w') as txt:
+                for cliente_instance in clientes_instances:
+                    txt.writelines(f"{cliente_instance.nome};{cliente_instance.cpf};{cliente_instance.telefone};{cliente_instance.email};{cliente_instance.endereco}")
+                    txt.writelines("\n")
+            print(f"O cliente '{cpf_alterar}' foi alterado com sucesso!")
