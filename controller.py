@@ -316,3 +316,32 @@ class ControllerCliente:
                     txt.writelines(f"{cliente_instance.nome};{cliente_instance.cpf};{cliente_instance.telefone};{cliente_instance.email};{cliente_instance.endereco}")
                     txt.writelines("\n")
             print(f"O cliente '{cpf_alterar}' foi alterado com sucesso!")
+
+    @classmethod
+    def remover_cliente(cls, cpf_remover):
+        clientes_instances = DaoCliente.ler()
+        busca_cpf = list(filter(lambda x: x.cpf == cpf_remover, clientes_instances))
+        if len(busca_cpf) == 0:
+            print(f"Falha ao remover o cliente '{cpf_remover}'! Não há nenhum cliente com esse cpf!")
+        else:
+            clientes_instances = list(filter(lambda x: x.cpf != cpf_remover, clientes_instances))
+            with open('files/clientes.txt', 'w') as txt:
+                for cliente_instance in clientes_instances:
+                    txt.writelines(f"{cliente_instance.nome};{cliente_instance.cpf};{cliente_instance.telefone};{cliente_instance.email};{cliente_instance.endereco}")
+                    txt.writelines("\n")
+            print(f"O cliente '{cpf_remover}' foi removido com sucesso!")
+
+    @classmethod
+    def mostrar_clientes(cls):
+        clientes_instances = DaoCliente.ler()
+        if len(clientes_instances) == 0:
+            print("A lista de clientes está vazia!")
+        else:
+            print("========== Clientes  ==========")
+            for cliente_instance in clientes_instances:
+                print(f"Nome: {cliente_instance.nome}\n"
+                      f"CPF: {cliente_instance.cpf}\n"
+                      f"Telefone: {cliente_instance.telefone}\n"
+                      f"Email: {cliente_instance.email}\n"
+                      f"Endereço: {cliente_instance.endereco}")
+                print("-"*30)
