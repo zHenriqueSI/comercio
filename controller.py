@@ -136,26 +136,32 @@ class ControllerEstoque:
 
 class ControllerVenda:
     @classmethod
-    def cadastrar_venda(cls, nome_produto, vendedor, comprador, quantidade_vendida):
-        # TODO: verificar a existência do cliente e do vendedor
+    def cadastrar_venda(cls, nome_produto, cpf_vendedor, cpf_comprador, quantidade_vendida):
         estoques_instances = DaoEstoque.ler()
+        funcionarios_instances = DaoFuncionario.ler()
+        clientes_instances = DaoCliente.ler()
         busca_instancia_estoque = list(filter(lambda x: x.produto.nome == nome_produto, estoques_instances))
-        if len(busca_instancia_estoque) > 0:
-            estoque_instance = busca_instancia_estoque[0]
-            if quantidade_vendida < estoque_instance.quantidade:
-                venda_instance = Venda(estoque_instance.produto, vendedor, comprador, quantidade_vendida)
-                DaoVenda.salvar(venda_instance)
-                estoque_instance.quantidade = int(estoque_instance.quantidade) - int(quantidade_vendida)
-                estoques_instances = list(map(lambda x: estoque_instance if(x.produto.nome == nome_produto) else(x), estoques_instances))
-                with open('files/estoques.txt', 'w') as txt:
-                    for estoque_instance in estoques_instances:
-                        txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
-                        txt.writelines('\n')
-                print(f"A venda do produto '{nome_produto}' foi cadastrada com sucesso!")
-            else:
-                print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Não há estoque suficiente!")
-        else:
+        busca_funcionario = list(filter(lambda x: x.cpf == cpf_vendedor, funcionarios_instances))
+        busca_cliente = list(filter(lambda x: x.cpf == cpf_comprador, clientes_instances))
+        if len(busca_instancia_estoque) == 0:
             print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Este produto não existe!")
+        elif quantidade_vendida > busca_instancia_estoque[0].quantidade:
+            print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! Não há estoque suficiente!")
+        elif len(busca_funcionario) == 0:
+            print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! O funcionário {cpf_vendedor} ainda não foi cadastrado!")
+        elif len(busca_cliente) == 0:
+            print(f"Falha ao cadastrar a venda do produto '{nome_produto}'! O cliente {cpf_comprador} ainda não foi cadastrado!")
+        else:
+            estoque_instance = busca_instancia_estoque[0]
+            venda_instance = Venda(estoque_instance.produto, cpf_vendedor, cpf_comprador, quantidade_vendida)
+            DaoVenda.salvar(venda_instance)
+            estoque_instance.quantidade = int(estoque_instance.quantidade) - int(quantidade_vendida)
+            estoques_instances = list(map(lambda x: estoque_instance if(x.produto.nome == nome_produto) else(x), estoques_instances))
+            with open('files/estoques.txt', 'w') as txt:
+                for estoque_instance in estoques_instances:
+                    txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
+                    txt.writelines('\n')
+            print(f"A venda do produto '{nome_produto}' foi cadastrada com sucesso!")
 
     @classmethod
     def gerar_relatorio(cls):
