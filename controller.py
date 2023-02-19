@@ -5,20 +5,17 @@ from datetime import datetime
 
 class ControllerCategoria:
     @classmethod
-    def cadastrar(cls, categoria: Categoria):
-        categoria_exite = False
+    def cadastrar_categoria(cls, categoria):
         categorias_instances = DaoCategoria.ler()
-        for categoria_instance in categorias_instances:
-            if categoria.categoria == categoria_instance.categoria:
-                categoria_exite = True
-                print(f"Falha ao cadastrar a categoria '{categoria.categoria}'! Esta categoria já existe!")
-        if not categoria_exite:
+        busca_categoria = list(filter(lambda x: x.categoria == categoria, categorias_instances))
+        if len(busca_categoria) > 0:
+            print(f"Falha ao cadastrar a categoria '{categoria}'! Esta categoria já existe!")
+        else:
             DaoCategoria.salvar(categoria)
-            print(f"Categoria '{categoria.categoria}' cadatrada com sucesso!")
+            print(f"Categoria '{categoria}' cadatrada com sucesso!")
 
     @classmethod
     def remover_categoria(cls, categoria_remover):
-        # TODO: mudar categoria removida para 'sem categoria' no estoque
         categorias_instances = DaoCategoria.ler()
         estoques_instances = DaoEstoque.ler()
         busca_categoria = list(filter(lambda x: x.categoria == categoria_remover, categorias_instances))
@@ -36,29 +33,26 @@ class ControllerCategoria:
             
             print(f"Categoria '{categoria_remover}' removida com sucesso!")
             
-
-
         else:
             print(f"Falha ao remover a categoria '{categoria_remover}'! Esta categoria não existe!")
 
     @classmethod
-    def mudar_nome(cls, categoria: Categoria, nova_categoria: Categoria):
+    def alterar_nome_categoria(cls, categoria_alterar, nova_categoria):
         categorias_instances = DaoCategoria.ler()
-        categoria_mudar = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
-        if len(categoria_mudar) > 0:
-            if categoria.categoria == nova_categoria.categoria:
-                print(f"Falha ao mudar o nome da categoria '{categoria.categoria}'! O novo nome não pode ser igual ao antigo!")
+        busca_categoria = list(filter(lambda x: x.categoria == categoria_alterar, categorias_instances))
+        if len(busca_categoria) > 0:
+            if categoria_alterar == nova_categoria:
+                print(f"Falha ao mudar o nome da categoria '{categoria_alterar}'! O novo nome não pode ser igual ao antigo!")
             else:
-                categoria_mudar = categoria_mudar[0].categoria
-                categorias_instances = list(map(lambda x: nova_categoria if(x.categoria == categoria_mudar) else (x), categorias_instances))
-                print(f"O nome da categoria '{categoria.categoria}' foi alterado para '{nova_categoria.categoria}' com sucesso!")
+                categorias_instances = list(map(lambda x: Categoria(nova_categoria) if(x.categoria == categoria_alterar) else (x), categorias_instances))
+                print(f"O nome da categoria '{categoria_alterar}' foi alterado para '{nova_categoria}' com sucesso!")
 
-            with open('files/categorias.txt', 'w') as txt:
-                for categoria in categorias_instances:
-                    txt.writelines(f'{categoria.categoria}\n')
+                with open('files/categorias.txt', 'w') as txt:
+                    for categoria in categorias_instances:
+                        txt.writelines(f'{categoria.categoria}\n')
 
         else:
-            print(f"Falha ao mudar o nome da categoria '{categoria.categoria}'! Esta categoria não existe!")
+            print(f"Falha ao alterar o nome da categoria '{categoria_alterar}'! Esta categoria não existe!")
 
     @classmethod
     def mostrar_categorias(cls):
@@ -72,20 +66,19 @@ class ControllerCategoria:
 
 class ControllerEstoque:
     @classmethod
-    def cadastrar_produto(cls, nome, preco, categoria: Categoria, quantidade):
+    def cadastrar_produto(cls, nome, preco, categoria, quantidade):
         estoques_instances = DaoEstoque.ler()
         categorias_instances = DaoCategoria.ler()
         busca_instancia_produto = list(filter(lambda x: x.produto.nome == nome, estoques_instances))
-        busca_instancia_categoria = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
-        if len(busca_instancia_produto) == 0:
-            if len(busca_instancia_categoria) > 0:
-                estoque = Estoque(Produto(nome, preco, categoria.categoria), quantidade)
-                DaoEstoque.salvar(estoque)
-                print(f"Produto '{nome}' cadastrado com sucesso!")
-            else:
-                print(f"Falha ao cadastrar o produto '{nome}'! A categoria {categoria.categoria} não existe!")
-        else:
+        busca_instancia_categoria = list(filter(lambda x: x.categoria == categoria, categorias_instances))
+        if len(busca_instancia_produto) > 0:
             print(f"Falha ao cadastrar o produto '{nome}'! Este produto já está cadastrado!")
+        elif len(busca_instancia_categoria) == 0:
+            print(f"Falha ao cadastrar o produto '{nome}'! A categoria {categoria} não existe!")
+        else:
+            estoque = Estoque(Produto(nome, preco, categoria), quantidade)
+            DaoEstoque.salvar(estoque)
+            print(f"Produto '{nome}' cadastrado com sucesso!")
 
     @classmethod
     def remover_produto(cls, nome):
@@ -107,25 +100,23 @@ class ControllerEstoque:
             print(f"Falha ao remover o produto '{nome}'! O produto {nome} não existe!")
 
     @classmethod
-    def alterar_produto(cls, nome, novo_nome, novo_preco, nova_categoria: Categoria, nova_quantidade):
+    def alterar_produto(cls, nome, novo_nome, novo_preco, nova_categoria, nova_quantidade):
         estoques_intances = DaoEstoque.ler()
         categorias_intances = DaoCategoria.ler()
         produto_mudar = list(filter(lambda x: x.produto.nome == nome, estoques_intances))
-        categoria_mudar = list(filter(lambda x: x.categoria == nova_categoria.categoria, categorias_intances))
-
-        if len(produto_mudar) > 0:
-            if len(categoria_mudar) > 0:
-                estoques_intances = list(map(lambda x: Estoque(Produto(novo_nome, novo_preco, nova_categoria.categoria), nova_quantidade) if(x.produto.nome == nome) else (x), estoques_intances))
-                with open('files/estoques.txt', 'w') as txt:
-                    for estoque_instance in estoques_intances:
-                        txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
-                        txt.writelines('\n')
-                print(f"Produto '{nome}' alterado com sucesso!")
-            else:
-                print(f"Falha ao alterar o produto '{nome}'! A categoria '{nova_categoria.categoria}' não existe!")
-
-        else:
+        categoria_mudar = list(filter(lambda x: x.categoria == nova_categoria, categorias_intances))
+        if len(produto_mudar) == 0:
             print(f"Falha ao alterar o produto '{nome}'! Este produto não está cadastrado!")
+        elif len(categoria_mudar) == 0:
+            print(f"Falha ao alterar o produto '{nome}'! A categoria '{nova_categoria}' não existe!")
+        else:
+            estoques_intances = list(map(lambda x: Estoque(Produto(novo_nome, novo_preco, nova_categoria), nova_quantidade) if(x.produto.nome == nome) else (x), estoques_intances))
+            with open('files/estoques.txt', 'w') as txt:
+                for estoque_instance in estoques_intances:
+                    txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
+                    txt.writelines('\n')
+            print(f"Produto '{nome}' alterado com sucesso!")
+
 
     @classmethod
     def mostrar_produtos(cls):

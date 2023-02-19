@@ -3,9 +3,9 @@ from models import *
 
 class DaoCategoria:
     @classmethod
-    def salvar(cls, categoria: Categoria):
+    def salvar(cls, categoria):
         with open('files/categorias.txt', 'a') as txt:
-            txt.writelines(f'{categoria.categoria}\n')
+            txt.writelines(f'{categoria}\n')
 
     @classmethod
     def ler(cls):
