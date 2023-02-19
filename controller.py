@@ -351,6 +351,36 @@ class ControllerFuncionario:
             funcionarios_instances = list(map(lambda x: Funcionario(novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco, novo_modelo_trabalho) if(x.cpf == cpf_alterar) else(x), funcionarios_instances))
             with open('files/funcionarios.txt', 'w') as txt:
                 for funcionario_instance in funcionarios_instances:
-                    txt.writelines(f"{funcionario_instance.nome};{funcionario_instance.cpf};{funcionario_instance.telefone};{funcionario_instance.email};{funcionario_instance.endereco}")
+                    txt.writelines(f"{funcionario_instance.nome};{funcionario_instance.cpf};{funcionario_instance.telefone};{funcionario_instance.email};{funcionario_instance.endereco};{funcionario_instance.modelo_trabalho}")
                     txt.writelines("\n")
             print(f"O funcionario '{cpf_alterar}' foi alterado com sucesso!")
+
+    @classmethod
+    def remover_funcionario(cls, cpf_remover):
+        funcionarios_instances = DaoFuncionario.ler()
+        busca_cpf = list(filter(lambda x: x.cpf == cpf_remover, funcionarios_instances))
+        if len(busca_cpf) == 0:
+            print(f"Falha ao remover o funcionario '{cpf_remover}'! Não há nenhum funcionario com esse cpf!")
+        else:
+            funcionarios_instances = list(filter(lambda x: x.cpf != cpf_remover, funcionarios_instances))
+            with open('files/funcionarios.txt', 'w') as txt:
+                for funcionario_instance in funcionarios_instances:
+                    txt.writelines(f"{funcionario_instance.nome};{funcionario_instance.cpf};{funcionario_instance.telefone};{funcionario_instance.email};{funcionario_instance.endereco};{funcionario_instance.modelo_trabalho}")
+                    txt.writelines("\n")
+            print(f"O funcionario '{cpf_remover}' foi removido com sucesso!")
+
+    @classmethod
+    def mostrar_funcionarios(cls):
+        funcionarios_instances = DaoFuncionario.ler()
+        if len(funcionarios_instances) == 0:
+            print("A lista de funcionarios está vazia!")
+        else:
+            print("========== Funcionarios  ==========")
+            for funcionario_instance in funcionarios_instances:
+                print(f"Nome: {funcionario_instance.nome}\n"
+                      f"CPF: {funcionario_instance.cpf}\n"
+                      f"Telefone: {funcionario_instance.telefone}\n"
+                      f"Email: {funcionario_instance.email}\n"
+                      f"Endereço: {funcionario_instance.endereco}\n"
+                      f"Modelo trabalho: {funcionario_instance.modelo_trabalho}")
+                print("-"*30)
