@@ -1,7 +1,7 @@
 from models import *
 from dal import *
 from datetime import datetime
-
+import os
 
 class ControllerCategoria:
     @classmethod
@@ -393,3 +393,13 @@ class ControllerFuncionario:
                       f"Endereço: {funcionario_instance.endereco}\n"
                       f"Modelo trabalho: {funcionario_instance.modelo_trabalho}")
                 print("-"*30)
+
+
+class ControllerGeral:
+    @classmethod
+    def criar_arquivos(cls, *arquivos):
+        for arquivo in arquivos:
+            caminho_arquivo = fr"files/{arquivo}"
+            if not os.path.exists(caminho_arquivo):
+                with open(caminho_arquivo, "w") as txt:
+                    txt.write("")
