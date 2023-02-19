@@ -22,12 +22,7 @@ class ControllerCategoria:
         categorias_instances = DaoCategoria.ler()
         categoria_remover = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
         if len(categoria_remover) > 0:
-            categoria_remover = categoria_remover[0].categoria
-            for i, categoria in enumerate(categorias_instances):
-                if categoria_remover == categoria.categoria:
-                    categorias_instances.pop(i)
-                    break
-
+            categoria_remover = list(filter(lambda x: Categoria(categoria) if(x.categoria != categoria) else(x), categorias_instances))
             with open('files/categorias.txt', 'w') as txt:
                 for categoria in categorias_instances:
                     txt.writelines(f'{categoria.categoria}\n')
