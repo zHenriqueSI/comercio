@@ -363,3 +363,26 @@ class ControllerFuncionario:
         else:
             DaoFuncionario.salvar(Funcionario(nome, cpf, telefone, email, endereco, modelo_trabalho))
             print(f"O cadastro do funcionario '{cpf}' foi realizado com com sucesso!")
+
+    @classmethod
+    def alterar_funcionario(cls, cpf_alterar, novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco, novo_modelo_trabalho):
+        funcionarios_instances = DaoFuncionario.ler()
+        busca_cpf_alterar = list(filter(lambda x: x.cpf == cpf_alterar, funcionarios_instances))
+        busca_cpf_novo = list(filter(lambda x: x.cpf == novo_cpf, funcionarios_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, funcionarios_instances))
+        busca_email = list(filter(lambda x: x.email == novo_email, funcionarios_instances))
+        if len(busca_cpf_alterar) == 0:
+            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! Não há nenhum funcionario com esse cpf!")
+        elif len(busca_cpf_novo) > 0:
+            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O novo cpf '{novo_cpf}' já existe!")        
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O telefone '{novo_telefone}' já existe!")
+        elif len(busca_email) > 0:
+            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O email '{novo_email}' já existe!")
+        else:
+            funcionarios_instances = list(map(lambda x: Funcionario(novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco, novo_modelo_trabalho) if(x.cpf == cpf_alterar) else(x), funcionarios_instances))
+            with open('files/funcionarios.txt', 'w') as txt:
+                for funcionario_instance in funcionarios_instances:
+                    txt.writelines(f"{funcionario_instance.nome};{funcionario_instance.cpf};{funcionario_instance.telefone};{funcionario_instance.email};{funcionario_instance.endereco}")
+                    txt.writelines("\n")
+            print(f"O funcionario '{cpf_alterar}' foi alterado com sucesso!")
