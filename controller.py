@@ -111,16 +111,12 @@ class ControllerEstoque:
 
         if len(produto_mudar) > 0:
             if len(categoria_mudar) > 0:
-                produto_mudar = list(filter(lambda x: x.produto.nome == novo_nome, estoques_intances))
-                if len(produto_mudar) == 0:
-                    estoques_intances = list(map(lambda x: Estoque(Produto(novo_nome, novo_preco, nova_categoria.categoria), nova_quantidade) if(x.produto.nome == nome) else (x), estoques_intances))
-                    with open('files/estoques.txt', 'w') as txt:
-                        for estoque_instance in estoques_intances:
-                            txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
-                            txt.writelines('\n')
-                    print(f"Produto '{nome}' alterado com sucesso!")
-                else:
-                    print(f"Falha ao alterar o produto '{nome}'! O produto '{novo_nome}' já existe!")
+                estoques_intances = list(map(lambda x: Estoque(Produto(novo_nome, novo_preco, nova_categoria.categoria), nova_quantidade) if(x.produto.nome == nome) else (x), estoques_intances))
+                with open('files/estoques.txt', 'w') as txt:
+                    for estoque_instance in estoques_intances:
+                        txt.writelines(f'{estoque_instance.produto.nome};{estoque_instance.produto.preco};{estoque_instance.produto.categoria};{estoque_instance.quantidade}')
+                        txt.writelines('\n')
+                print(f"Produto '{nome}' alterado com sucesso!")
             else:
                 print(f"Falha ao alterar o produto '{nome}'! A categoria '{nova_categoria.categoria}' não existe!")
 
@@ -227,19 +223,9 @@ class ControllerFornecedor:
     @classmethod
     def alterar_fornecedor(cls, cnpj_alterar, novo_nome, novo_cnpj, novo_telefone, nova_categoria):
         fornecedores_instances = DaoFornecedor.ler()
-        categorias_instances = DaoCategoria.ler()
         busca_cnpj_alterar = list(filter(lambda x: x.cnpj == cnpj_alterar, fornecedores_instances))
-        busca_cnpj_novo = list(filter(lambda x: x.cnpj == novo_cnpj, fornecedores_instances))
-        busca_categoria = list(filter(lambda x: x.categoria == nova_categoria, categorias_instances))
-        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, fornecedores_instances))
         if len(busca_cnpj_alterar) == 0:
             print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! Não há nenhum fornecedor com esse cnpj!")
-        elif len(busca_cnpj_novo) > 0:
-            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! O novo cnpj '{novo_cnpj}' já existe!")
-        elif len(busca_telefone) > 0:
-            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! O telefone já existe!")
-        elif len(busca_categoria) == 0:
-            print(f"Falha ao alterar o fornecedor '{cnpj_alterar}'! A categoria '{nova_categoria}' ainda não foi cadastrada!")
         else:
             fornecedores_instances = list(map(lambda x: Fornecedor(novo_nome, novo_cnpj, novo_telefone, nova_categoria) if(x.cnpj == cnpj_alterar) else(x), fornecedores_instances))
             with open('files/fornecedores.txt', 'w') as txt:
@@ -298,17 +284,8 @@ class ControllerCliente:
     def alterar_cliente(cls, cpf_alterar, novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco):
         clientes_instances = DaoCliente.ler()
         busca_cpf_alterar = list(filter(lambda x: x.cpf == cpf_alterar, clientes_instances))
-        busca_cpf_novo = list(filter(lambda x: x.cpf == novo_cpf, clientes_instances))
-        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, clientes_instances))
-        busca_email = list(filter(lambda x: x.email == novo_email, clientes_instances))
         if len(busca_cpf_alterar) == 0:
             print(f"Falha ao alterar o cliente '{cpf_alterar}'! Não há nenhum cliente com esse cpf!")
-        elif len(busca_cpf_novo) > 0:
-            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O novo cpf '{novo_cpf}' já existe!")        
-        elif len(busca_telefone) > 0:
-            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O telefone '{novo_telefone}' já existe!")
-        elif len(busca_email) > 0:
-            print(f"Falha ao alterar o cliente '{cpf_alterar}'! O email '{novo_email}' já existe!")
         else:
             clientes_instances = list(map(lambda x: Cliente(novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco) if(x.cpf == cpf_alterar) else(x), clientes_instances))
             with open('files/clientes.txt', 'w') as txt:
@@ -368,17 +345,8 @@ class ControllerFuncionario:
     def alterar_funcionario(cls, cpf_alterar, novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco, novo_modelo_trabalho):
         funcionarios_instances = DaoFuncionario.ler()
         busca_cpf_alterar = list(filter(lambda x: x.cpf == cpf_alterar, funcionarios_instances))
-        busca_cpf_novo = list(filter(lambda x: x.cpf == novo_cpf, funcionarios_instances))
-        busca_telefone = list(filter(lambda x: x.telefone == novo_telefone, funcionarios_instances))
-        busca_email = list(filter(lambda x: x.email == novo_email, funcionarios_instances))
         if len(busca_cpf_alterar) == 0:
             print(f"Falha ao alterar o funcionario '{cpf_alterar}'! Não há nenhum funcionario com esse cpf!")
-        elif len(busca_cpf_novo) > 0:
-            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O novo cpf '{novo_cpf}' já existe!")        
-        elif len(busca_telefone) > 0:
-            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O telefone '{novo_telefone}' já existe!")
-        elif len(busca_email) > 0:
-            print(f"Falha ao alterar o funcionario '{cpf_alterar}'! O email '{novo_email}' já existe!")
         else:
             funcionarios_instances = list(map(lambda x: Funcionario(novo_nome, novo_cpf, novo_telefone, novo_email, novo_endereco, novo_modelo_trabalho) if(x.cpf == cpf_alterar) else(x), funcionarios_instances))
             with open('files/funcionarios.txt', 'w') as txt:
