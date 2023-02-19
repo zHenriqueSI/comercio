@@ -275,3 +275,21 @@ class ControllerFornecedor:
                       f"Telefone: {fornecedor_instance.telefone}\n"
                       f"Categoria: {fornecedor_instance.categoria}")
                 print("-"*30)
+
+
+class ControllerCliente:
+    @classmethod
+    def cadastrar_cliente(cls, nome, cpf, telefone, email, endereco):
+        clientes_instances = DaoCliente.ler()
+        busca_cpf = list(filter(lambda x: x.cpf == cpf, clientes_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == telefone, clientes_instances))
+        busca_email = list(filter(lambda x: x.email == email, clientes_instances))
+        if len(busca_cpf) > 0:
+            print(f"Falha ao cadastrar o cliente '{cpf}'! O cpf já existe!")
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao cadastrar o cliente '{nome}'! O telefone já existe!")
+        elif len(busca_email) > 0:
+            print(f"Falha ao cadastrar o cliente '{nome}'! O email já existe!")
+        else:
+            DaoCliente.salvar(Cliente(nome, cpf, telefone, email, endereco))
+            print(f"O cadastro do cliente '{cpf}' foi realizado com com sucesso!")
