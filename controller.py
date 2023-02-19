@@ -17,23 +17,32 @@ class ControllerCategoria:
             print(f"Categoria '{categoria.categoria}' cadatrada com sucesso!")
 
     @classmethod
-    def remover(cls, categoria: Categoria):
+    def remover_categoria(cls, categoria_remover):
         # TODO: mudar categoria removida para 'sem categoria' no estoque
         categorias_instances = DaoCategoria.ler()
-        categoria_remover = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
-        if len(categoria_remover) > 0:
-            categoria_remover = list(filter(lambda x: Categoria(categoria) if(x.categoria != categoria) else(x), categorias_instances))
+        estoques_instances = DaoEstoque.ler()
+        busca_categoria = list(filter(lambda x: x.categoria == categoria_remover, categorias_instances))
+        if len(busca_categoria) > 0:
+            categorias_instances = list(filter(lambda x: x.categoria != categoria_remover, categorias_instances))
             with open('files/categorias.txt', 'w') as txt:
                 for categoria in categorias_instances:
                     txt.writelines(f'{categoria.categoria}\n')
-                    print(f"Categoria '{categoria.categoria}' removida com sucesso!")
+
+            estoques_corrididos = list(map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, 'sem categoria'), x.quantidade) if(x.produto.categoria == categoria_remover) else(x), estoques_instances))
+            with open('files/estoques.txt', 'w') as txt:
+                for estoque_corrigido in estoques_corrididos:
+                    txt.writelines(f'{estoque_corrigido.produto.nome};{estoque_corrigido.produto.preco};{estoque_corrigido.produto.categoria};{estoque_corrigido.quantidade}')
+                    txt.writelines('\n')
+            
+            print(f"Categoria '{categoria_remover}' removida com sucesso!")
+            
+
 
         else:
-            print(f"Falha ao remover a categoria '{categoria.categoria}'! Esta categoria não existe!")
+            print(f"Falha ao remover a categoria '{categoria_remover}'! Esta categoria não existe!")
 
     @classmethod
     def mudar_nome(cls, categoria: Categoria, nova_categoria: Categoria):
-        # TODO: mudar também o nome da categoria no estoque
         categorias_instances = DaoCategoria.ler()
         categoria_mudar = list(filter(lambda x: x.categoria == categoria.categoria, categorias_instances))
         if len(categoria_mudar) > 0:
