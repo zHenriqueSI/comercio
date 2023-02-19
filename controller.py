@@ -261,3 +261,17 @@ class ControllerFornecedor:
                     txt.writelines(f"{fornecedor_instance.nome};{fornecedor_instance.cnpj};{fornecedor_instance.telefone};{fornecedor_instance.categoria}")
                     txt.writelines("\n")
             print(f"O fornecedor '{cnpj_remover}' foi removido com sucesso!")
+
+    @classmethod
+    def mostrar_fornecedores(cls):
+        fornecedores_instances = DaoFornecedor.ler()
+        if len(fornecedores_instances) == 0:
+            print("A lista de fornecedores está vazia!")
+        else:
+            print("========== Fornecedores  ==========")
+            for fornecedor_instance in fornecedores_instances:
+                print(f"Nome: {fornecedor_instance.nome}\n"
+                      f"CNPJ: {fornecedor_instance.cnpj}\n"
+                      f"Telefone: {fornecedor_instance.telefone}\n"
+                      f"Categoria: {fornecedor_instance.categoria}")
+                print("-"*30)
