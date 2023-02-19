@@ -345,3 +345,21 @@ class ControllerCliente:
                       f"Email: {cliente_instance.email}\n"
                       f"Endereço: {cliente_instance.endereco}")
                 print("-"*30)
+
+
+class ControllerFuncionario:
+    @classmethod
+    def cadastrar_funcionario(cls, nome, cpf, telefone, email, endereco, modelo_trabalho):
+        funcionarios_instances = DaoFuncionario.ler()
+        busca_cpf = list(filter(lambda x: x.cpf == cpf, funcionarios_instances))
+        busca_telefone = list(filter(lambda x: x.telefone == telefone, funcionarios_instances))
+        busca_email = list(filter(lambda x: x.email == email, funcionarios_instances))
+        if len(busca_cpf) > 0:
+            print(f"Falha ao cadastrar o funcionario '{cpf}'! O cpf já existe!")
+        elif len(busca_telefone) > 0:
+            print(f"Falha ao cadastrar o funcionario '{cpf}'! O telefone já existe!")
+        elif len(busca_email) > 0:
+            print(f"Falha ao cadastrar o funcionario '{cpf}'! O email já existe!")
+        else:
+            DaoFuncionario.salvar(Funcionario(nome, cpf, telefone, email, endereco, modelo_trabalho))
+            print(f"O cadastro do funcionario '{cpf}' foi realizado com com sucesso!")
