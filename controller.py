@@ -224,7 +224,6 @@ class ControllerFornecedor:
             DaoFornecedor.salvar(Fornecedor(nome, cnpj, telefone, categoria))
             print(f"A o cadastro do fornecedor '{nome}' foi realizado com com sucesso!")
 
-
     @classmethod
     def alterar_fornecedor(cls, cnpj_alterar, novo_nome, novo_cnpj, novo_telefone, nova_categoria):
         fornecedores_instances = DaoFornecedor.ler()
@@ -249,4 +248,16 @@ class ControllerFornecedor:
                     txt.writelines("\n")
             print(f"O fornecedor '{cnpj_alterar}' foi alterado com sucesso!")
 
-ControllerFornecedor.alterar_fornecedor('01.325.664/1353-11', 'Vinicius Junior', '14.332.664/1341-11', '11953253928', 'Cosméticos')
+    @classmethod
+    def remover_fornecedor(cls, cnpj_remover):
+        fornecedores_instances = DaoFornecedor.ler()
+        busca_cnpj = list(filter(lambda x: x.cnpj == cnpj_remover, fornecedores_instances))
+        if len(busca_cnpj) == 0:
+            print(f"Falha ao remover o fornecedor '{cnpj_remover}'! Não há nenhum fornecedor com esse cnpj!")
+        else:
+            fornecedores_instances = list(filter(lambda x: x.cnpj != cnpj_remover, fornecedores_instances))
+            with open('files/fornecedores.txt', 'w') as txt:
+                for fornecedor_instance in fornecedores_instances:
+                    txt.writelines(f"{fornecedor_instance.nome};{fornecedor_instance.cnpj};{fornecedor_instance.telefone};{fornecedor_instance.categoria}")
+                    txt.writelines("\n")
+            print(f"O fornecedor '{cnpj_remover}' foi removido com sucesso!")
